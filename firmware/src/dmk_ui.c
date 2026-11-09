@@ -2838,11 +2838,18 @@ DMK_SMALL static void ui_button(int b, int down)
             ui.btn_used |= (uint16_t)(bit | 1u << B_HOME | 1u << B_SAVE);
             return;
         }
-        if (b == B_OCTU && (ui.btn_held >> B_SEQ & 1u)) { /* SEQ + OCT+: clear all patterns, regardless of the open page */
+        if (b == B_OCTU && (ui.btn_held >> B_SEQ & 1u)) { /* SEQ + OCT+: clear and persist all patterns, on any page */
+            int saved = 0;
             ui.btn_used |= (uint16_t)(bit | 1u << B_SEQ);
             seq_clear_all_patterns();
             ui.clear_arm = 0;
-            notice("All patterns cleared");
+            ui.copy_arm = 0;
+            ui.arr_cur = 0;
+            /* The FM-1 keeps projects in flash across firmware updates. Clearing only RAM made the old
+             * factory phrase return on the next boot. Replace the currently open project with its blank
+             * sequence, keeping its sounds, mix and other settings. */
+            if (store_on()) saved = song_save(ui.song) == 0;
+            notice(saved ? "Patterns cleared and saved" : store_on() ? "Cleared, not saved" : "Cleared (no store)");
             return;
         }
         if ((b == B_OCTD || b == B_OCTU) && ui.page == PG_CHORD) {

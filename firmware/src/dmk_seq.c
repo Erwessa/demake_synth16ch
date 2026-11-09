@@ -89,7 +89,10 @@ static void spat_keep(int s)                            /* synth s's roll into i
 {
     pseq_t *q = &spat[s][syn_pat(s)];
     int i;
-    q->count = sq[s].count; q->steps = sq[s].steps; q->used = 1;
+    q->count = sq[s].count; q->steps = sq[s].steps;
+    /* Merely saving/opening an untouched empty roll must not allocate a pattern. A pattern becomes used
+     * when it has notes, or remains used if it was deliberately created before being emptied. */
+    q->used = (uint8_t)(q->used || sq[s].count != 0);
     for (i = 0; i < sq[s].count; i++) q->n[i] = sq[s].n[i];
 }
 static uint8_t spat_gen[DMK_SYNTHS];                    /* a synth's patterns switched: counted (a key recorded across
@@ -139,6 +142,7 @@ static int spat_dup(int s)                              /* synth s's pattern cop
     if (q == SYN_PATS) return -1;
     q = (from + q) % SYN_PATS;
     spat[s][q] = spat[s][from];
+    spat[s][q].used = 1;                              /* an explicit copy allocates a pattern, even if it is blank */
     scn[scn_cur].pat[s] = (uint8_t)q;
     return q;
 }
@@ -649,6 +653,9 @@ static void seq_clear_all_patterns(void)
 {
     int s, p;
     seq_play(0);
+    chord_quiet();
+    chord_start();
+    chord_rest();
     arp_clear_all();
     for (s = 0; s < DMK_SYNTHS; s++) {
         seq_quiet(s);

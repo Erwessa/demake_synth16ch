@@ -428,6 +428,9 @@ static void selftest(void)
     int64_t e;
     dmk_init(7);
     now_ms = 0;
+    if (sq[0].count || sq[1].count || sq[2].count) {
+        fails++; printf("selftest: factory demo notes remain in a fresh project (%u, %u, %u)\n", sq[0].count, sq[1].count, sq[2].count);
+    }
     dmk_render(b, 512);
     e = 0; for (int i = 0; i < 1024; i++) e += b[i] < 0 ? -b[i] : b[i];
     if (e) { fails++; printf("selftest: sound before any key\n"); }
@@ -775,13 +778,14 @@ static void selftest(void)
         dmk_init(7); now_ms = 0; wait_ms(60); ui.boot_done = 1;
     }
     /* harmony: synth 3 in harmony with synth 2, a third above: its roll left, each of 2's notes moved on the scale;
-     * a key played on 2 sounds on 3 too, and lets go there too. The boot sequencer is intentionally blank, so this
-     * test supplies its own lead notes instead of relying on the removed factory demo. */
+     * a key played on 2 sounds on 3 too, and lets go there too */
     {
         int seen = 0, own = 0, bad = 0;
         dmk_init(17); now_ms = 0; wait_ms(60); ui.boot_done = 1;
-        seq_add(1, 0, 8, 60, 100); seq_add(1, 8, 8, 64, 100); seq_add(1, 16, 8, 67, 100);
         ch.follow[2] = FW_HARM2; ch.hint[2] = 2;
+        /* seq_init now deliberately starts empty; give this test its own lead phrase. */
+        sq[1].count = 0; sq[1].steps = 16;
+        seq_add(1, 0, 12, 60, 100); seq_add(1, 4, 12, 64, 100); seq_add(1, 8, 12, 67, 100);
         seq_play(1);
         for (int t = 0; t < 400; t++) {
             wait_ms(10);
@@ -1734,37 +1738,53 @@ static void selftest(void)
         #undef ON
         dmk_init(7); now_ms = 0; wait_ms(60); ui.boot_done = 1;
     }
-    {   /* OCT+ on Arrange's Scene row (the owner): this scene's own copy of a synth's pattern; edited, the scene it came from stays */
+    {   /* SEQ held + OCT+ (the owner): this scene's own copy of a synth's pattern; edited, the scene it came from stays */
         int n1;
         dmk_init(42); now_ms = 0; wait_ms(60); ui.boot_done = 1;
         dmk_button(B_HOME, 1); wait_ms(30); dmk_key(2, 1); dmk_key(2, 0); dmk_button(B_HOME, 0); wait_ms(30);   /* scene 2, a copy */
         if (scn_cur != 1 || scn[1].pat[1] != scn[0].pat[1]) { fails++; printf("selftest: a new scene does not share its patterns first\n"); }
         ui.synth = 1;
-        dmk_button(B_HOME, 1); dmk_button(B_SEQ, 1); dmk_button(B_SEQ, 0); dmk_button(B_HOME, 0); wait_ms(30);
-        ui.row[PG_ARR] = 0;                              /* the Scene row, not the Song row */
+        /* Pattern duplication remains available in Arrange; SEQ + OCT+ is now the global clear-all shortcut. */
+        dmk_button(B_HOME, 1); wait_ms(30); dmk_button(B_SEQ, 1); dmk_button(B_SEQ, 0); dmk_button(B_HOME, 0); wait_ms(30);
+        ui.row[PG_ARR] = 0;
         dmk_button(B_OCTU, 1); dmk_button(B_OCTU, 0); wait_ms(30);
-        if (scn[1].pat[1] == scn[0].pat[1] || ui.octave) { fails++; printf("selftest: OCT+ on Arrange does not give the scene its own pattern\n"); }
+        if (scn[1].pat[1] == scn[0].pat[1] || ui.octave) { fails++; printf("selftest: Arrange OCT+ does not give the scene its own pattern\n"); }
         n1 = spat[1][scn[0].pat[1]].count;
         seq_add(1, 7, 1, 72, 100);
         scn_open(0);
         if (sq[1].count != n1 || seq_find(1, 7, 72) >= 0) { fails++; printf("selftest: editing the scene's own pattern changed the scene it came from\n"); }
         dmk_init(7); now_ms = 0; wait_ms(60); ui.boot_done = 1;
     }
-    {   /* SEQ + OCT+ clears every pattern and the arrangement from any page. */
+    {   /* SEQ + OCT+ clears every pattern and persists the blank sequence across a reboot. */
+        int s, p, dirty = 0;
+        host_store_on(1, 1);
         dmk_init(43); now_ms = 0; wait_ms(60); ui.boot_done = 1;
-        seq_add(0, 0, 4, 60, 100); seq_add(1, 4, 4, 64, 100);
-        spat[0][0].used = spat[0][0].count = 1;
-        spat[0][0].n[0].step = 0; spat[0][0].n[0].len = 4; spat[0][0].n[0].note = 60; spat[0][0].n[0].vel = 100; spat[0][0].n[0].off = 0;
-        song_n = 1; song[0].scene = 0; song[0].bars = 1;
-        tap(B_FX);                                      /* not limited to Arrange */
-        dmk_button(B_SEQ, 1); dmk_button(B_OCTU, 1); dmk_button(B_OCTU, 0); dmk_button(B_SEQ, 0); wait_ms(30);
-        { int bad = song_n != 0;
-          for (int q = 0; q < DMK_SYNTHS; q++) {
-              bad |= sq[q].count != 0;
-              for (int pp = 0; pp < SYN_PATS; pp++) bad |= spat[q][pp].count != 0 || spat[q][pp].used != 0;
-          }
-          if (bad || seq_on || seq_rec || strcmp(ui.note, "All patterns cleared")) { fails++; printf("selftest: SEQ + OCT+ does not clear every pattern and the arrangement\n"); }
+        for (s = 0; s < DMK_SYNTHS; s++) {
+            sq[s].count = 0; seq_add(s, 0, 4, 60 + s, 100);
+            spat_keep(s);
+            spat[s][1].used = 1; spat[s][1].count = 1; spat[s][1].n[0] = sq[s].n[0];
+            scn[1].used = 1; scn[1].pat[s] = 1;
         }
+        song_n = 1; song_mode = 1; ui.octave = 1; ui.page = PG_ARR;
+        dmk_button(B_SEQ, 1); dmk_button(B_OCTU, 1); dmk_button(B_OCTU, 0); dmk_button(B_SEQ, 0); wait_ms(30);
+        for (s = 0; s < DMK_SYNTHS; s++) {
+            dirty += sq[s].count != 0;
+            for (p = 0; p < SYN_PATS; p++) dirty += spat[s][p].used || spat[s][p].count;
+        }
+        if (dirty || song_n || song_mode || scn_cur || !scn[0].used || ui.octave != 1) {
+            fails++; printf("selftest: SEQ + OCT+ did not clear all patterns and the arrangement (%d)\n", dirty);
+        }
+        if (!song_used(ui.song) || song_changed()) {
+            fails++; printf("selftest: SEQ + OCT+ did not save the cleared project\n");
+        }
+        dmk_init(44); now_ms = 0; wait_ms(60); ui.boot_done = 1;
+        dirty = song_n || song_mode || scn_cur || !scn[0].used;
+        for (s = 0; s < DMK_SYNTHS; s++) {
+            dirty += sq[s].count != 0;
+            for (p = 0; p < SYN_PATS; p++) dirty += spat[s][p].used || spat[s][p].count;
+        }
+        if (dirty) { fails++; printf("selftest: cleared patterns returned after reboot (%d)\n", dirty); }
+        host_store_on(0, 0);
         dmk_init(7); now_ms = 0; wait_ms(60); ui.boot_done = 1;
     }
     {   /* FX's Sends (the owner, 2026-10-26: the Space GLO's alone, none on a track): a synth's send to the Space and its
@@ -1811,8 +1831,6 @@ static void selftest(void)
         int k, v, on = 0, moved = 0, out = 0, dup = 0, arp_on_n = 0, arp_moved = 0;
         uint8_t was[SEQ_NOTES];
         dmk_init(34); now_ms = 0; wait_ms(60); ui.boot_done = 1;
-        /* Explicit roll material: a fresh instrument no longer boots with demo notes. */
-        seq_add(1, 0, 4, 60, 100); seq_add(1, 4, 4, 64, 100); seq_add(1, 8, 4, 67, 100);
         ui.val[0][PG_ROLL][1][2] = 0; sp_sync();        /* the pad, playing the chords: no chance */
         tap(B_PLAY);
         for (k = 0; k < 120; k++) { dmk_render(b, 256); for (v = 0; v < DMK_VOICES; v++) on += vc[v].on && vc[v].sy == 0 && vc[v].src == SRC_CHORD; }
@@ -1835,6 +1853,10 @@ static void selftest(void)
         for (k = 0; k < sq[1].count; k++) was[k] = sq[1].n[k].note;
         ui.val[1][PG_ROLL][2][0] = choice_val(AR_UP, AR_N);   /* the piano's arp on, Vary at no chance */
         ui.val[1][PG_ROLL][1][2] = 0; ui.val[1][PG_ROLL][1][0] = 127; ui.val[1][PG_ROLL][1][3] = choice_val(1, 2); sp_sync();
+        /* Empty boot rolls no longer supply an implicit demo arp phrase. */
+        arp[1].n = 3; arp[1].note[0] = 60; arp[1].note[1] = 64; arp[1].note[2] = 67;
+        arp[1].vel[0] = arp[1].vel[1] = arp[1].vel[2] = 100;
+        arp[1].hc[0] = arp[1].hc[1] = arp[1].hc[2] = 0; arp[1].ph = 0;
         tap(B_PLAY);
         for (k = 0; k < 200; k++) { dmk_render(b, 256); for (v = 0; v < DMK_VOICES; v++) arp_on_n += vc[v].on && vc[v].sy == 1 && vc[v].src == SRC_ARP; }
         tap(B_PLAY);
@@ -1858,8 +1880,9 @@ static void selftest(void)
         int s, k, on, moved = 0, out = 0;
         uint8_t was[SEQ_NOTES];
         dmk_init(31); now_ms = 0; wait_ms(60); ui.boot_done = 1;
-        /* A deliberate test pattern, independent of factory content. */
-        seq_add(1, 0, 4, 60, 100); seq_add(1, 4, 4, 64, 100); seq_add(1, 8, 4, 67, 100);
+        /* Explicit notes: a clean boot is intentionally silent, not a hidden factory demo. */
+        sq[1].count = 0; sq[1].steps = 16;
+        seq_add(1, 0, 8, 57, 100); seq_add(1, 2, 8, 60, 100); seq_add(1, 4, 8, 64, 100); seq_add(1, 6, 8, 67, 100);
         ui.val[2][PG_ROLL][1][2] = 0; sp_sync();       /* (the pluck: it plays its roll; the pad plays the chords) */
         tap(B_PLAY);
         for (on = 0, k = 0; k < 40; k++) { dmk_render(b, 256); for (int v = 0; v < DMK_VOICES; v++) on += vc[v].on && vc[v].sy == 2; }
