@@ -846,15 +846,15 @@ static void selftest(void)
             int ch, bad = 0, n;
             ui.synth = 1;
             for (ch = 0; ch < 16; ch++) {
-                ui.val[0][PG_GLOBAL][3][0] = choice_val(2 + ch, MIDI_IN_N); sp_sync();
-                if (midi_chans != 2 + ch) bad++;
+                ui.val[0][PG_GLOBAL][3][0] = choice_val(2 + ch, MIDI_IN_N);   /* no DSP/UI sync between setting and input */
                 dmk_midi(0x90 | ((ch + 5) & 15), 60, 100); wait_ms(30);        /* another channel: silent */
+                if (midi_chans != 2 + ch) bad++;
                 n = 0; for (int v = 0; v < DMK_VOICES; v++) n += vc[v].on;
                 if (n) bad++;
                 dmk_midi(0x90 | ch, 62, 100); wait_ms(30);                      /* the channel: synth 2 (selected) plays */
                 n = 0; for (int v = 0; v < DMK_VOICES; v++) n += vc[v].on && vc[v].sy == 1;
                 if (!n) bad++;
-                ui.val[0][PG_GLOBAL][3][0] = choice_val(0, MIDI_IN_N); sp_sync();   /* (the setting moved on mid-note) */
+                ui.val[0][PG_GLOBAL][3][0] = choice_val(0, MIDI_IN_N);          /* setting moved on mid-note */
                 dmk_midi(0x80 | ch, 62, 0); wait_ms(600);                       /* its end still lets go */
                 n = 0; for (int v = 0; v < DMK_VOICES; v++) n += vc[v].on && vc[v].sy == 1;
                 if (n) bad++;

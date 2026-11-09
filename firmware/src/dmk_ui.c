@@ -3573,9 +3573,16 @@ static int mi_chord_on(int s, int st, int d1, int vel)  /* 1: played as a chord 
     strike_src(s, mi_chd[i].ch, mi_chd[i].n, SRC_MIDI, 0, MI_OWN + i, vel);
     return 1;
 }
+static int midi_input_mode(void)
+{
+    /* Read the setting itself, not a cached DSP parameter. MIDI can arrive between
+     * UI/audio synchronisation passes (and immediately after a project is loaded). */
+    return choice_index(choice_of(PG_GLOBAL, 3, 0), VS(0, PG_GLOBAL, 3, 0));
+}
 static void midi_in(int st, int d1, int d2)
 {
-    int ty = st & 0xF0, s, f;
+    int ty = st & 0xF0, s, f, in_mode = midi_input_mode();
+    midi_chans = (uint8_t)in_mode;                  /* keep diagnostics and the rest of the core in sync */
     if (st == 0xF8) {                                   /* a clock */
         uint32_t now = seq_frames, dt = now - mi_last;
         mi_last = now;
@@ -3596,9 +3603,9 @@ static void midi_in(int st, int d1, int d2)
     }
     if (st == 0xFC) { mi_armed = 0; if (clock_ext) seq_play(0); return; }   /* stop */
     if ((ty != 0x80 && ty != 0x90) || d1 < 0 || d1 > 127) return;
-    if (midi_chans >= 2 && (st & 15) != midi_chans - 2 && ty == 0x90 && d2) return;   /* one channel: the others' new notes are
-                                                           not for this machine (their ends still let go what began) */
-    s = midi_chans == 1 && (st & 15) < DMK_SYNTHS ? st & 15 : ui.synth;
+    if (in_mode >= 2 && (st & 15) != in_mode - 2 && ty == 0x90 && d2) return;   /* one channel: ignore new notes on
+                                                           the others; their note-offs still release notes begun here */
+    s = in_mode == 1 && (st & 15) < DMK_SYNTHS ? st & 15 : ui.synth;
     if (mi_chord_off(st, d1) && !(ty == 0x90 && d2)) return;   /* its chord let go (again: a new one, below) */
     if (mi_sy[st & 15][d1]) {                           /* on already: the synth it began on; ended first if again */
         int s0 = mi_sy[st & 15][d1] - 1;
