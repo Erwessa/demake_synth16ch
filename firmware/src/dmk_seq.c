@@ -631,21 +631,36 @@ static uint32_t seq_rec_q8(int s)
 
 static void seq_init(void)
 {
-    /* the first song's patterns, A minor at 72: the pad's chords over two bars, the piano's line over one, the
-     * pluck's figure over twelve steps, so it lands somewhere new each bar */
-    static const uint8_t PAD[][3] = {{0, 16, 57}, {0, 16, 60}, {0, 16, 64}, {16, 16, 53}, {16, 16, 57}, {16, 16, 60}};
-    static const uint8_t PIANO[][3] = {{0, 3, 69}, {4, 2, 72}, {6, 2, 71}, {8, 4, 67}, {12, 4, 64}};
-    static const uint8_t PLUCK[][3] = {{0, 1, 76}, {3, 1, 69}, {6, 1, 72}, {9, 1, 74}};
-    ext_seen = 0;                                       /* no outside clock heard yet */
+    /* Start with an actually blank sequencer. The factory demo used to be inserted here on
+     * every boot, which made an untouched instrument appear to contain a user's recording. */
     unsigned i;
+    ext_seen = 0;                                       /* no outside clock heard yet */
     for (i = 0; i < DMK_SYNTHS; i++) { arp[i].n = arp[i].held = arp[i].non = 0; arp[i].gated = 1; arp[i].rng = 0x9E3779B9u * (i + 7u); }
-    for (i = 0; i < DMK_SYNTHS; i++) { sq[i].count = 0; sq[i].pos = 0; sq[i].rng = 0x2545F491u * (i + 1u); }   /* (Vary's dice) */
+    for (i = 0; i < DMK_SYNTHS; i++) { sq[i].count = 0; sq[i].pos = 0; sq[i].rng = 0x2545F491u * (i + 1u); }
     sq[0].steps = 32; sq[1].steps = 16; sq[2].steps = 12;
-    for (i = 0; i < sizeof PAD / sizeof PAD[0]; i++) seq_add(0, PAD[i][0], PAD[i][1], PAD[i][2], 100);
-    for (i = 0; i < sizeof PIANO / sizeof PIANO[0]; i++) seq_add(1, PIANO[i][0], PIANO[i][1], PIANO[i][2], 100);
-    for (i = 0; i < sizeof PLUCK / sizeof PLUCK[0]; i++) seq_add(2, PLUCK[i][0], PLUCK[i][1], PLUCK[i][2], 100);
     seq_on = seq_rec = 0;
     for (i = 0; i < DMK_SYNTHS; i++) { unsigned k; for (k = 0; k < SEQ_LIVE; k++) sq[i].left[k] = 0, sq[i].wait[k] = 0; }
     pat_init();
     song_init();
+}
+
+/* SEQ + OCT+: stop playback and clear every synth's eight patterns, all scenes and the song arrangement. */
+static void seq_clear_all_patterns(void)
+{
+    int s, p;
+    seq_play(0);
+    arp_clear_all();
+    for (s = 0; s < DMK_SYNTHS; s++) {
+        seq_quiet(s);
+        seq_quiet_from(s);
+        sq[s].count = 0;
+        sq[s].pos = 0;
+        for (p = 0; p < SYN_PATS; p++) {
+            spat[s][p].count = 0;
+            spat[s][p].used = 0;
+        }
+    }
+    pat_init();
+    song_init();
+    seq_rec = 0;
 }

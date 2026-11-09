@@ -69,7 +69,7 @@ static const char *const BTN_NAME[B_COUNT] = {"FX", "SEL", "ENV", "LFO", "EDIT",
 /* what a button held does (shown after 350 ms); none: a slow press is a tap (the audit: placeholders, and layers
  * named that were never there) */
 static const char *const LAYER_NAME[B_COUNT] = {"", "", "", "", "SAVE keeps, OCT\xE2\x88\x92 init", "",
-                                                "", "", "OCT+ to the roll, K1 a slot", "ALGO follow, OCT+ copy, OCT\xE2\x88\x92 clear", "", "", "", ""};
+                                                "", "", "OCT+ to the roll, K1 a slot", "ALGO follow, OCT+ clear all, OCT\xE2\x88\x92 clear", "", "", "", ""};
 
 /* a choice field: its names (none: a number 0..127) */
 typedef struct { uint8_t page, row, k, n; const char *const *name; } choice_t;
@@ -2838,6 +2838,13 @@ DMK_SMALL static void ui_button(int b, int down)
             ui.btn_used |= (uint16_t)(bit | 1u << B_HOME | 1u << B_SAVE);
             return;
         }
+        if (b == B_OCTU && (ui.btn_held >> B_SEQ & 1u)) { /* SEQ + OCT+: clear all patterns, regardless of the open page */
+            ui.btn_used |= (uint16_t)(bit | 1u << B_SEQ);
+            seq_clear_all_patterns();
+            ui.clear_arm = 0;
+            notice("All patterns cleared");
+            return;
+        }
         if ((b == B_OCTD || b == B_OCTU) && ui.page == PG_CHORD) {
             int h;
             for (h = 0; h < DMK_KEYS && !(ui.keys_down[h] && ui.key_slot[h]); h++) {}
@@ -2970,17 +2977,6 @@ DMK_SMALL static void ui_button(int b, int down)
                 notice(song_erase(ui.song_pick) ? "Not deleted" : "Deleted");
                 ui.clear_arm = 0;
             } else { ui.clear_arm = 3; ui.arm_at = ui.song_pick; ui.clear_at = ui.now; notice("OCT\xE2\x88\x92 again: delete it"); }
-            return;
-        }
-        if (b == B_OCTU && ui.btn_held >> B_SEQ & 1u) {   /* SEQ held, OCT+: this synth's pattern copied into a new one,
-                                                           this scene's own (the owner: a new scene shares the one it
-                                                           came from, and editing one changed both) */
-            char m[28];
-            int from = syn_pat(ui.synth), q = spat_dup(ui.synth);
-            ui.btn_used |= (uint16_t)(bit | 1u << B_SEQ);
-            if (q < 0) { notice("Eight patterns: all in use"); return; }
-            fmt_int(str_cat(fmt_int(str_cat(m, "Pattern "), from + 1), " to "), q + 1);
-            notice(m);
             return;
         }
         if (b == B_OCTD && (ui.btn_held >> B_SEQ & 1u || ui.btn_held >> B_HOME & 1u)) {
