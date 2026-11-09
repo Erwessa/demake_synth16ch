@@ -1,0 +1,76 @@
+# Builds Demake for the FM-1 (an installable .fwsc) on GitHub's machines, which can reach JieLi's toolchain server.
+# Result: Actions tab > the run > "Artifacts" > demake-fwsc  (the file is demake-<version>.fwsc; unzip it once).
+# Run it by hand (Actions > Firmware > Run workflow) and type the version, or it builds on every push to main.
+# Never publish a package that has not run on an FM-1.
+name: Firmware
+
+on:
+  push:
+    branches: [main]
+    paths: ['firmware/**', 'tools/fm1/**', '.github/workflows/firmware.yml']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version shown at boot and in the file name (X.Y or X.Y.Z)'
+        default: '0.4.25'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Host self-test (the same core the FM-1 runs)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q libtinfo5 libncurses5 xz-utils
+          mkdir -p build/host
+          cc -std=c99 -D_DARWIN_C_SOURCE -O2 -w -Ifirmware/src -Ifirmware/gen -o build/host/dmk_host host/dmk_host.c -lm
+          build/host/dmk_host --selftest
+
+      - name: JieLi toolchain
+        run: sh tools/fm1/get_toolchain.sh "$HOME/.jieli"
+
+      - name: AC79 SDK (the files the package needs)
+        run: |
+          SDK="$HOME/.jieli/ac79-sdk"
+          TAG=AC79NN_SDK_V1.2.1_2023-12-13
+          if sh tools/fm1/get_sdk.sh "$SDK"; then exit 0; fi
+          rm -rf "$SDK"
+          # JieLi's own repository on Gitee, the tag, only the tools folder
+          if git clone --depth 1 --branch "$TAG" --filter=blob:none --sparse https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$SDK" \
+             && git -C "$SDK" sparse-checkout set cpu/wl82/tools; then :; else
+            rm -rf "$SDK"
+            git clone --depth 1 --branch "$TAG" https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git "$SDK"
+          fi
+          cd "$SDK"
+          echo "4e3b4c220dc96641cb5a723f41e68ce41d5261ae9434bb33fbd7f2c59976ded4  cpu/wl82/tools/uboot.boot" | sha256sum -c -
+          echo "276579954f076886a6a7694f65dc71c034a63a2c204b76749065c0ac7b010d1b  cpu/wl82/tools/cfg_tool.bin" | sha256sum -c -
+          echo "41167491bffed4651750719c973d2758adeb9021a5670d02d6a53c85ed80ea7d  cpu/wl82/tools/cfg/eq_cfg_hw.bin" | sha256sum -c -
+
+      - name: Firmware
+        env:
+          JIELI_DOCKER: '0'
+          VER: ${{ github.event.inputs.version }}
+        run: |
+          export JIELI_TOOLCHAIN="$HOME/.jieli/toolchain" AC79_SDK="$HOME/.jieli/ac79-sdk"
+          [ -n "$VER" ] || VER=0.4.25
+          set -o pipefail
+          if ! python3 tools/fm1/build.py --release "$VER" 2>&1 | tee build.log; then
+            grep -nE "error|Error|ERROR|undefined|overflow|exceed|check|fail" build.log | head -60 > errs.txt || true
+            echo "::error title=build (errors)::$(sed 's/%/%25/g' errs.txt | awk '{printf "%s%%0A", $0}')"
+            echo "::error title=build (tail)::$(tail -40 build.log | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
+            exit 1
+          fi
+          echo "::notice title=build (summary)::$(tail -20 build.log | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demake-fwsc
+          path: |
+            build/fm1/*.fwsc
+            build/fm1/*.bin
+          if-no-files-found: error
