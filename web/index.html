@@ -1,0 +1,135 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demake</title>
+  <meta name="description" content="Demake: an ambient lofi machine for the M-VAVE FM-1. Three synths on its own recordings, scenes and songs, a chord machine, tape, lossy, a reverb each and one huge Space.">
+  <link rel="icon" href="img/icon.png">
+  <link rel="stylesheet" href="style.css?v=35">
+  <script>
+    /* the splash, once a visit and never for less motion; if anything fails, the page shows after 4 s regardless */
+    try {
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("demake.splash")) {
+        document.documentElement.classList.add("splashing");
+        sessionStorage.setItem("demake.splash", "1");
+        setTimeout(function () { document.documentElement.classList.remove("splashing"); }, 4000);
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+<div class="splash" id="splash" aria-hidden="true"><canvas></canvas></div>
+<script src="splash.js?v=1"></script>
+<main class="canvas hxp">
+
+  <!-- the header: the D in its module, the index, the two actions -->
+  <header class="g head">
+    <a href="./" class="iso bits" style="--src: url(img/iso.png)" aria-label="Demake"></a>
+    <a href="#play" class="nav n1"><b>Play</b><span>Emulator</span></a>
+    <a href="manual.html" class="nav n2"><b>Manual</b><span>How it works</span></a>
+    <a href="install.html" class="nav n3"><b>Install</b><span>Over USB</span></a>
+    <a href="https://github.com/InigoHernandez/demake-synth" class="nav n4"><b>Source</b><span>GitHub</span></a>
+    <a href="https://ko-fi.com/sequencist" class="kofi pill" target="_blank" rel="noopener">Support on Ko&#8209;fi</a>
+    <a href="#play" class="cta lit">Play it</a>
+  </header>
+
+  <!-- the hero: the wordmark, lit as the screen lights it, and what it is -->
+  <section class="g hero">
+    <h1 class="mark bits" style="--src: url(img/wordmark.png)" role="img" aria-label="Demake"></h1>
+    <p class="say">An ambient lofi machine for the M&#8209;VAVE&nbsp;FM&#8209;1.</p>
+    <p class="meta">Three synths on its own recordings, worn by tape. Play it here, or install it.</p>
+    <a href="install.html" class="hx hx1"><b>Install</b><span>Over USB</span></a>
+    <a href="manual.html" class="hx hx2"><b>Manual</b><span>How it works</span></a>
+  </section>
+
+  <!-- 01 play: the device on its light -->
+  <section class="g strip" id="play"><span class="no">01</span><span class="lb">Play</span></section>
+  <section class="g play">
+    <div class="emu card">
+      <canvas class="heat" data-heat="img/art/hero.png" aria-hidden="true"></canvas>
+      <div class="panel" id="panel">
+        <svg id="svg" viewBox="14 14 876 538" role="application" aria-label="The FM-1's panel"></svg>
+        <canvas id="lcd" width="240" height="240" aria-label="The screen"></canvas>
+      </div>
+    </div>
+    <button class="power lit" id="power">Power on</button>
+    <div class="vol"><span class="lb">Volume</span><span class="ticks" id="vol" role="slider" aria-label="Volume"
+      aria-valuemin="0" aria-valuemax="100" aria-valuenow="80" tabindex="0"></span></div>
+    <ul class="keys" aria-label="The computer's keys">
+      <li><span><kbd>Z</kbd>–<kbd>/</kbd> <kbd>Q</kbd>–<kbd>O</kbd></span>The keys</li>
+      <li><span><kbd>1</kbd>–<kbd>=</kbd></span>The buttons</li>
+      <li><span><kbd>[</kbd> <kbd>]</kbd></span>OCT− and OCT+</li>
+      <li><span><kbd>↑</kbd> <kbd>←</kbd></span>Select, Algorithm; Shift-click holds</li>
+    </ul>
+  </section>
+
+  <!-- 02 how to play: the panel in outline; a control pointed at lights, says what it does and shows its page -->
+  <section class="g strip" id="how"><span class="no">02</span><span class="lb">How to play</span></section>
+  <section class="g how">
+    <div class="howdev card"><svg id="hsvg" viewBox="14 14 876 538" role="img" aria-label="The FM-1's panel: point at a control"></svg></div>
+    <p class="howsay" id="hsay" aria-live="polite"><b>Point at a control</b> <span>Its page comes up on the screen</span></p>
+    <p class="howkey" id="hkey">In the emulator: the computer's keys, or drag a knob</p>
+    <div class="howlist" id="hlist" aria-label="The controls"></div>
+  </section>
+
+  <!-- 03 inside: what a sound goes through, each in its light -->
+  <section class="g strip" id="engines"><span class="no">03</span><span class="lb">Inside</span></section>
+  <section class="g art">
+    <figure class="eng e1"><div class="img"><canvas class="heat" data-heat="img/art/flow.png"></canvas></div><figcaption><b>Sample</b><span>Its own recordings, looped, one layered under another.</span></figcaption></figure>
+    <figure class="eng e2"><div class="img"><canvas class="heat" data-heat="img/art/pool.png"></canvas></div><figcaption><b>Filter</b><span>Seven shapes and a drive, low-pass to vowel.</span></figcaption></figure>
+    <figure class="eng e3"><div class="img"><canvas class="heat" data-heat="img/art/drift.png"></canvas></div><figcaption><b>Colour</b><span>Saturate, crush, lossy, noise, warm, distort.</span></figcaption></figure>
+    <figure class="eng e4"><div class="img"><canvas class="heat" data-heat="img/art/rise.png"></canvas></div><figcaption><b>Media</b><span>Tape to dictaphone over the whole mix, wow and all.</span></figcaption></figure>
+    <figure class="eng e5"><div class="img"><canvas class="heat" data-heat="img/art/twin.png"></canvas></div><figcaption><b>Motion</b><span>Chorus to flanger, and a tremolo in time.</span></figcaption></figure>
+    <figure class="eng e6"><div class="img"><canvas class="heat" data-heat="img/art/wave.png"></canvas></div><figcaption><b>Space</b><span>A reverb and a delay or echo a synth; one huge Space.</span></figcaption></figure>
+  </section>
+
+  <!-- 04 the screens: its pages, one press each -->
+  <section class="g strip" id="screens"><span class="no">04</span><span class="lb">Screens</span></section>
+  <section class="g screens">
+    <figure class="main home">
+      <div class="frame f432 bits" style="--src: url(img/frame432.png)" aria-hidden="true"></div>
+      <div class="frame f288 bits" style="--src: url(img/frame288.png)" aria-hidden="true"></div>
+      <img id="shown" src="img/screens/01_home.png" width="360" height="360" alt="Home: the three synths">
+      <canvas id="live" width="240" height="240" hidden aria-label="The screen, live"></canvas>
+    </figure>
+    <p class="shown" id="shownname"><b>Home</b> The synths, the one sounding lit</p>
+    <div class="index" id="pages" aria-label="The pages">
+      <p class="ih"><b>Pages</b> <span>Press one to see it</span></p>
+      <button class="page on" data-src="img/screens/01_home.png" data-name="Home" data-b="6" data-say="The synths, the one sounding lit"><kbd>HOME</kbd><b>Home</b><span></span></button>
+      <button class="page" data-src="img/screens/02_roll.png" data-name="Roll" data-b="9" data-say="A sequence, the cursor lit"><kbd>SEQ</kbd><b>Roll</b><span></span></button>
+      <button class="page" data-src="img/screens/07_chord.png" data-name="Chord" data-b="8" data-say="The chord now, the progression"><kbd>ARP</kbd><b>Chord</b><span></span></button>
+      <button class="page" data-src="img/screens/16_home_held.png" data-name="Scenes" data-b="6" data-hold="2500" data-say="The playing one lit, the next a ring"><kbd>HOME</kbd><b>Scenes</b><span>held</span></button>
+      <button class="page" data-src="img/screens/03_sound.png" data-name="Sound" data-b="4" data-say="The sound&#39;s shape, its loop"><kbd>EDIT</kbd><b>Sound</b><span></span></button>
+      <button class="page" data-src="img/screens/04_filter.png" data-name="Filter" data-b="1" data-say="The response, its cutoff a point"><kbd>SEL</kbd><b>Filter</b><span></span></button>
+      <button class="page" data-src="img/screens/05_amp.png" data-name="Amp" data-b="2" data-say="The envelope, its points round"><kbd>ENV</kbd><b>Amp</b><span></span></button>
+      <button class="page" data-src="img/screens/06_fx.png" data-name="FX" data-b="0" data-say="Reverb, delay, motion, sends"><kbd>FX</kbd><b>FX</b><span></span></button>
+      <button class="page" data-src="img/screens/08_global.png" data-name="Global" data-b="5" data-say="The colour, the Space, the media, the setup"><kbd>GLO</kbd><b>Global</b><span></span></button>
+      <button class="page" data-src="img/screens/09_lfo.png" data-name="LFO" data-b="3" data-say="Its shape and its target"><kbd>LFO</kbd><b>LFO</b><span></span></button>
+      <button class="page" data-src="img/screens/30_save_projects.png" data-name="Save" data-b="7" data-say="Projects, a list; then the sounds"><kbd>SAVE</kbd><b>Save</b><span></span></button>
+      <button class="page" data-src="img/screens/19_home_night.png" data-name="Night" data-say="The same pages, the night theme"><kbd>GLO</kbd><b>Night</b><span>Theme</span></button>
+    </div>
+  </section>
+
+  <!-- the footer: the words, whole; the links -->
+  <div class="g bandrow"><div class="band bits" style="--src: url(img/band.png)" role="img" aria-label="Ambient lofi machine"></div></div>
+  <nav class="g foot links" aria-label="Sequencist, the author">
+    <span>By Sequencist</span>
+    <a href="https://github.com/InigoHernandez" target="_blank" rel="noopener">GitHub ↗</a>
+    <a href="https://sequencist.bandcamp.com/" target="_blank" rel="noopener">Bandcamp ↗</a>
+    <a href="https://www.youtube.com/@sequencist" target="_blank" rel="noopener">YouTube ↗</a>
+    <a href="https://www.instagram.com/sequencist.fm" target="_blank" rel="noopener">Instagram ↗</a>
+    <a href="https://soundcloud.com/sequencist" target="_blank" rel="noopener">SoundCloud ↗</a>
+  </nav>
+  <footer class="g foot fin">
+    <span>Demake</span><span class="w2">An ambient lofi machine</span>
+    <a class="w2" href="https://ko-fi.com/sequencist" target="_blank" rel="noopener">Support on Ko&#8209;fi ↗</a><span class="r">2026</span>
+    <span class="legal">GPL-3.0. M&#8209;VAVE and FM&#8209;1 are their owners' marks; Demake is not made or endorsed by M&#8209;VAVE.
+      Geist: SIL OFL 1.1. Kiloy: Marvadesign.</span>
+  </footer>
+</main>
+<script src="app.js?v=44"></script>
+<script src="guide.js?v=3"></script>
+</body>
+</html>

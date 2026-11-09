@@ -1,0 +1,391 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- Demake's manual, after MONO2K's: the contents at the left, one page at a time at the right (manual.js shows the one
+     the address names, #chords and so on; without scripts every page shows, one after the other). A line a control,
+     on the site's 48 px grid (docs/plan.md, 6). What is not built says so. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demake manual</title>
+  <meta name="description" content="How to play Demake on the M-VAVE FM-1 and in the emulator: the panel, the pages, the rolls, chords and effects.">
+  <link rel="icon" href="img/icon.png">
+  <link rel="stylesheet" href="style.css?v=35">
+</head>
+<body class="noscript-all">
+<main class="canvas">
+
+  <header class="g head">
+    <a href="./" class="iso bits" style="--src: url(img/iso.png)" aria-label="Demake"></a>
+    <a href="./#play" class="nav n1"><b>Play</b><span>Emulator</span></a>
+    <a href="manual.html" class="nav n2" aria-current="page"><b>Manual</b><span>How it works</span></a>
+    <a href="install.html" class="nav n3"><b>Install</b><span>Over USB</span></a>
+    <a href="https://github.com/InigoHernandez/demake-synth" class="nav n4"><b>Source</b><span>GitHub</span></a>
+    <a href="https://ko-fi.com/sequencist" class="kofi pill" target="_blank" rel="noopener">Support on Ko&#8209;fi</a>
+    <a href="./#play" class="cta lit">Play it</a>
+  </header>
+
+  <div class="g mdocs">
+    <details class="mside" id="side" open>
+      <summary>Contents</summary>
+      <p class="mgroup">Getting started</p>
+      <a href="#introduction">Introduction</a>
+      <a href="#installing">Installing</a>
+      <p class="mgroup">The instrument</p>
+      <a href="#panel">The panel</a>
+      <a href="#pages">The pages</a>
+      <p class="mgroup">Playing</p>
+      <a href="#keys">Keys and sounds</a>
+      <a href="#rolls">The rolls</a>
+      <a href="#chords">Chords</a>
+      <a href="#songs">Scenes and songs</a>
+      <a href="#saving">Saving</a>
+      <p class="mgroup">Sound</p>
+      <a href="#sounds">The sounds</a>
+      <a href="#filter">Filter, envelope, LFO</a>
+      <a href="#effects">Effects</a>
+      <p class="mgroup">Reference</p>
+      <a href="#midi">MIDI</a>
+      <a href="#credits">Credits and licence</a>
+    </details>
+
+    <div class="mdoc" id="doc">
+
+      <article id="introduction" data-group="Getting started">
+        <h1>Introduction</h1>
+        <p class="msub">Demake turns the M&#8209;VAVE FM&#8209;1 into an ambient lofi machine: three synths on 64 recordings, a roll each, a chord machine, lofi effects and long reverbs.</p>
+        <figure class="mfig"><img src="img/screens/01_home.png" alt="Home" width="240" height="240"><figcaption>Home: the three synths, a scene for the sound.</figcaption></figure>
+        <div class="mt">
+          <p><b>Synths</b><span>Three, each its own roll, length and effects</span></p>
+          <p><b>Sounds</b><span>64 recordings, built in</span></p>
+          <p><b>Voices</b><span>12, shared; half on the second core</span></p>
+          <p><b>Progressions</b><span>16, and four of your own</span></p>
+          <p><b>Version</b><span>The newest, on the install page</span></p>
+        </div>
+        <p class="note">In the browser: Power on, then the panel, or these keys.</p>
+        <div class="mt">
+          <p><b>Z to /, S to '</b><span>The lower keys, F3 to A4</span></p>
+          <p><b>Q to O</b><span>The upper keys, B4 to G5</span></p>
+          <p><b>1 to =</b><span>The twelve buttons, FX to REC</span></p>
+          <p><b>[ ]</b><span>OCT&minus; and OCT+</span></p>
+          <p><b>Arrows</b><span>Up and down SELECT, left and right ALGORITHM</span></p>
+          <p><b>A knob</b><span>Drag it up or down, or scroll over it</span></p>
+          <p><b>Shift click</b><span>Holds a button down</span></p>
+        </div>
+        <p class="note">In the home page's screens, once it plays, the screen is live: a page pressed opens it, a value scrolled turns its knob.</p>
+      </article>
+      <article id="installing" data-group="Getting started">
+        <h1>Installing</h1>
+        <p class="msub">From the installer page, over USB, in Chrome or Edge on a computer.</p>
+        <ol class="msteps">
+          <li><i class="mk">1</i>Plug the FM&#8209;1 in with a cable that carries data and switch it on.</li>
+          <li><i class="mk">2</i>Open Install, at the top, and press Connect; allow MIDI.</li>
+          <li><i class="mk">3</i>Press Install and wait about a minute, until it says done.</li>
+          <li><i class="mk">4</i>A dark screen: hold OCT&minus; while switching on, then install again.</li>
+        </ol>
+        <p class="note">The same page takes the FM&#8209;1 back to M&#8209;VAVE's own V15.</p>
+      </article>
+      <article id="panel" data-group="The instrument">
+        <h1>The panel</h1>
+        <p class="msub">Each button opens its page; again, its next row. K1 to K4 turn the values over them, ALGORITHM the one at the foot.</p>
+        <div class="mt">
+          <p><b>FX</b><span>Effects: reverb, delay, motion, sends</span></p>
+          <p><b>SEL</b><span>Filter</span></p>
+          <p><b>ENV</b><span>Amp: the envelope and the level</span></p>
+          <p><b>LFO</b><span>LFO: a slow wave on the pitch, cutoff, level, pan or start</span></p>
+          <p><b>EDIT</b><span>Sound: the recording; again, its layer; again, the voice</span></p>
+          <p><b>GLO</b><span>Global: the colour, the Space, the media over the mix; the setup</span></p>
+          <p><b>HOME</b><span>Home: levels and tempo, sends to the Space, pans; the scene</span></p>
+          <p><b>ARP</b><span>Chord: the progression; the keys play chords</span></p>
+          <p><b>SEQ</b><span>Roll: this synth's own sequence</span></p>
+          <p><b>SAVE</b><span>Projects and sounds; again, saved</span></p>
+          <p><b>PLAY, REC</b><span>Play the rolls and chords; record the keys as played</span></p>
+          <p><b>OCT&minus; OCT+</b><span>The octave as you let go; with a note held, delete or copy</span></p>
+        </div>
+        <div class="mt">
+          <p><b>SELECT</b><span>The synth, on every page</span></p>
+          <p><b>PRESETS</b><span>The page's rows; on Home, the synth's sound</span></p>
+          <p><b>ALGORITHM</b><span>The foot's value: on FX and GLO the row's type; on Home the rows</span></p>
+          <p><b>K1 to K4</b><span>The four values on top</span></p>
+          <p><b>MASTER</b><span>The volume</span></p>
+        </div>
+        <div class="mt">
+          <p><b>Tap, again</b><span>A page button opens its page; again, its next row</span></p>
+          <p><b>PRESETS, ALGO</b><span>PRESETS the row, ALGORITHM its type; on Home ALGORITHM the row</span></p>
+          <p><b>Hold, then act</b><span>A held key or chord: the knobs change it, OCT&minus; deletes, OCT+ copies</span></p>
+          <p><b>Lists go round</b><span>Past the last, the first; numbers stop at their ends</span></p>
+        </div>
+      </article>
+      <article id="pages" data-group="The instrument">
+        <h1>The pages</h1>
+        <p class="msub">The same layout on each: the title and its row, four values, a card, the foot.</p>
+        <div class="mfigs">
+          <figure class="mfig"><img src="img/screens/02_roll.png" alt="Roll" width="240" height="240"><figcaption>Roll: a synth's notes and length.</figcaption></figure>
+          <figure class="mfig"><img src="img/screens/07_chord.png" alt="Chord" width="240" height="240"><figcaption>Chord: the progression, the chord now.</figcaption></figure>
+          <figure class="mfig"><img src="img/screens/03_sound.png" alt="Sound" width="240" height="240"><figcaption>Sound: the recording and its loop.</figcaption></figure>
+          <figure class="mfig"><img src="img/screens/04_filter.png" alt="Filter" width="240" height="240"><figcaption>Filter: the response, its cutoff.</figcaption></figure>
+          <figure class="mfig"><img src="img/screens/05_amp.png" alt="Amp" width="240" height="240"><figcaption>Amp: the envelope, its points.</figcaption></figure>
+          <figure class="mfig"><img src="img/screens/06_fx.png" alt="FX" width="240" height="240"><figcaption>FX: four rows, a synth each.</figcaption></figure>
+        </div>
+        <p class="note">Home has three rows, ALGORITHM round them; PRESETS stays the sound there.</p>
+        <div class="mt">
+          <p><b>Level</b><span>Each synth's level; K4 the tempo</span></p>
+          <p><b>Space</b><span>Each synth's send to the Space; K4 its return</span></p>
+          <p><b>Pan</b><span>Each synth's place; K4 the mix's width</span></p>
+        </div>
+      </article>
+      <article id="keys" data-group="Playing">
+        <h1>Keys and sounds</h1>
+        <p class="msub">The keys play the synth SELECT picks; on Home, PRESETS steps through its sounds.</p>
+        <div class="mt">
+          <p><b>SELECT</b><span>Synth 1, 2 or 3, on every page</span></p>
+          <p><b>PRESETS</b><span>On Home: the next recording, then your saved sounds</span></p>
+          <p><b>OCT&minus; OCT+</b><span>Two octaves down or up, as you let go</span></p>
+          <p><b>Both held</b><span>The landscape, full screen; a knob, a page or both again: back</span></p>
+          <p><b>On Chord</b><span>Each key plays a chord instead</span></p>
+          <p><b>Keys: All</b><span>Chords on every page, each synth its own (Chord, Keys row); on the roll they are written</span></p>
+        </div>
+      </article>
+      <article id="rolls" data-group="Playing">
+        <h1>The rolls</h1>
+        <p class="msub">Each synth has its own roll and length, so the three loop against each other.</p>
+        <figure class="mfig"><img src="img/screens/02_roll.png" alt="Roll" width="240" height="240"><figcaption>The pad's 32 steps; the cursor lit.</figcaption></figure>
+        <div class="mt">
+          <p><b>A key</b><span>Stopped, REC lit: writes at the cursor, then moves it on; REC off, it only plays</span></p>
+          <p><b>Its length</b><span>The last one you gave a held note (K3)</span></p>
+          <p><b>Held + K1</b><span>Moves the note; K2 its pitch, K3 its length</span></p>
+          <p><b>Held + K4</b><span>Nudge: later or earlier, in ms after its step</span></p>
+          <p><b>Held + ALGO</b><span>Its velocity</span></p>
+          <p><b>Held + OCT&minus;</b><span>Deletes it; OCT+ copies it after itself</span></p>
+          <p><b>K1 K2</b><span>The cursor, the view</span></p>
+          <p><b>K3, Follow</b><span>How it follows the chords; Free: as written</span></p>
+          <p><b>K4</b><span>This synth's length, 1 to 256 steps</span></p>
+          <p><b>A click</b><span>A step to 16, a beat to 64, then a bar</span></p>
+          <p><b>PLAY</b><span>Plays all three; the keys play along</span></p>
+          <p><b>REC, then PLAY</b><span>Ready: the first key starts it, recording</span></p>
+          <p><b>Recorded</b><span>As played: each note&#39;s timing, a strum&#39;s spacing</span></p>
+          <p><b>SEQ + OCT&minus;</b><span>Twice: clears this synth's roll</span></p>
+          <p><b>HOME + OCT&minus;</b><span>Twice: clears all three</span></p>
+          <p><b>Keys: All</b><span>A key writes its chord at the cursor; the foot names the chord there</span></p>
+        </div>
+        <div class="mt">
+          <p><b>SEQ again</b><span>The Vary row, each synth's own (SELECT: the synth)</span></p>
+          <p><b>Mutate</b><span>How often a note plays another of the scale, Range steps up or down</span></p>
+          <p><b>Chance</b><span>How often a note plays at all</span></p>
+          <p><b>Evolve</b><span>On: what Mutate moves is written in, the roll changes as it plays; Off: as written</span></p>
+          <p><b>On what</b><span>What it plays: its roll, the chords, or its arp's notes</span></p>
+        </div>
+        <div class="mt">
+          <p><b>SEQ a third time</b><span>The Arp row, each synth's own</span></p>
+          <p><b>What it plays</b><span>What reaches the synth: keys, its roll, its chords, MIDI</span></p>
+          <p><b>Up, Down</b><span>Hill: up and down; Valley: down and up</span></p>
+          <p><b>Bounce</b><span>Up and down, its ends twice</span></p>
+          <p><b>Fold, Unfold</b><span>The outside in; the middle out</span></p>
+          <p><b>Dice, Walk</b><span>At random; a step up or down at random</span></p>
+          <p><b>Played, Chord</b><span>As you played them; all at once</span></p>
+          <p><b>Thumb, Pinky</b><span>The lowest, or the highest, between each</span></p>
+          <p><b>Rate, Octave</b><span>1/32 to 1/4 of the tempo; one to four octaves</span></p>
+          <p><b>Gate</b><span>How long each note holds, to legato</span></p>
+          <p><b>ALGORITHM, Hold</b><span>On: the notes stay when let go, till a new chord</span></p>
+        </div>
+        <p class="note">A note above or below the seven rows in view leaves a mark at the roll's edge; one you write, the view goes to.</p>
+        <p class="note">A roll written to is heard: a synth that played the chords plays its roll from then (the roll's K3, Follow, or SEQ + ALGORITHM puts it back). A roll cleared is silent, the chords it played too.</p>
+      </article>
+      <article id="chords" data-group="Playing">
+        <h1>Chords</h1>
+        <p class="msub">A key is a chord on Chord: the song key&#39;s chord built on it. PLAY runs the progression; four of your own after the presets.</p>
+        <figure class="mfig"><img src="img/screens/07_chord.png" alt="Chord" width="240" height="240"><figcaption>First snow in A Aeolian.</figcaption></figure>
+        <div class="mt">
+          <p><b>A key</b><span>Its chord: A gives Am7, F gives Fmaj7</span></p>
+          <p><b>ALGORITHM</b><span>The progression: 16 presets, then User 1 to 4</span></p>
+          <p><b>Voice row</b><span>Voicing, inversion (Auto moves least), spread, strum (each synth its own)</span></p>
+          <p><b>Key row</b><span>Key, mode, chord length, rhythm</span></p>
+          <p><b>Keys row</b><span>Chord or All, each synth its own; the type: sevenths, triads, ninths, add9, sus2, sus4, 6/9, power</span></p>
+          <p><b>SEQ + ALGO</b><span>How this synth follows (the roll's K3 too): chords, key, chord, root, free, or another synth's harmony</span></p>
+          <p><b>SEQ + K2</b><span>The harmony's interval: an octave below to an octave above</span></p>
+        </div>
+        <p class="note">The first song: the pad plays the chords, the piano follows the key, the third synth the root. The card's grey line names the synth that plays them. In harmony with another synth, a synth leaves its roll and plays each note the other plays, moved on the scale; keys played on the lead are harmonized too.</p>
+        <p class="note">Your own: on Chord, User 1 to 4, stopped, REC armed.</p>
+        <ol class="msteps">
+          <li><i class="mk">1</i>On Chord, turn ALGORITHM to User 1, or start from a preset.</li>
+          <li><i class="mk">2</i>Stopped, press REC: the foot says the keys write chords.</li>
+          <li><i class="mk">3</i>Each key writes its chord at the cursor and moves it on.</li>
+          <li><i class="mk">4</i>Hold one: K1 moves it, K2 its quality, K3 its bars, K4 its bass.</li>
+          <li><i class="mk">5</i>ARP held: K1 the cursor; OCT+ prints it into the synth's roll.</li>
+        </ol>
+      </article>
+      <article id="songs" data-group="Playing">
+        <h1>Scenes and songs</h1>
+        <p class="msub">Each synth has eight patterns. A scene picks one for each synth; a song strings scenes, up to 128 steps of 1 to 8 bars. HOME + SEQ opens the Song page.</p>
+        <figure class="mfig"><img src="img/screens/16_home_held.png" alt="Scenes" width="240" height="240"><figcaption>HOME held: the sixteen scenes, the one playing lit.</figcaption></figure>
+        <div class="mt">
+          <p><b>HOME + white key</b><span>Scene 1 to 16; playing, it waits for the bar</span></p>
+          <p><b>An empty scene</b><span>Starts as a copy of the one playing, its patterns shared</span></p>
+          <p><b>HOME + OCT+, a key</b><span>Copies the scene there; over one in use, the key twice</span></p>
+          <p><b>HOME + black key</b><span>Mutes synth 1, 2 or 3 in the scene, and back</span></p>
+          <p><b>HOME + OCT&minus;</b><span>Twice: clears the scene's three rolls</span></p>
+        </div>
+        <div class="mfigs">
+          <figure class="mfig"><img src="img/screens/23_arrange_scene.png" alt="Scene row" width="240" height="240"><figcaption>Scene: each synth's pattern and notes.</figcaption></figure>
+          <figure class="mfig"><img src="img/screens/24_arrange.png" alt="Steps row" width="240" height="240"><figcaption>Steps: the song, the cursor's ring.</figcaption></figure>
+        </div>
+        <div class="mt">
+          <p><b>Scene, K1 K2 K3</b><span>Each synth's pattern; playing, at the bar</span></p>
+          <p><b>Scene, K4</b><span>The scene's progression</span></p>
+          <p><b>Scene, a white key</b><span>The selected synth's pattern 1 to 8</span></p>
+          <p><b>Scene, OCT+ OCT&minus;</b><span>Copies the pattern into a new one; twice, clears it</span></p>
+          <p><b>Steps, a white key</b><span>Stopped, writes a step of that scene and moves on</span></p>
+          <p><b>Steps, K1 K2 K3 K4</b><span>The step, its scene, its bars (1 to 8), the end</span></p>
+          <p><b>Steps, OCT&minus; OCT+</b><span>Deletes the step; copies it after itself</span></p>
+        </div>
+        <div class="mt">
+          <p><b>HOME + PLAY</b><span>Scene mode or song mode, on any page</span></p>
+          <p><b>PLAY</b><span>In song mode, the song; on the Song page, from the cursor</span></p>
+          <p><b>The end</b><span>Loop, stop, fade out, or fade in and out</span></p>
+          <p><b>REC, PLAY</b><span>On the Song page: records it live, switch scenes with HOME held</span></p>
+          <p><b>A scene picked</b><span>While the song plays: leaves the song for it</span></p>
+        </div>
+      </article>
+      <article id="saving" data-group="Playing">
+        <h1>Saving</h1>
+        <p class="msub">Fourteen projects and thirty-two sounds, kept in the machine. The newest project opens at start.</p>
+        <figure class="mfig"><img src="img/screens/30_save_projects.png" alt="Save, Projects" width="240" height="240"><figcaption>Projects: the one open, saved and named.</figcaption></figure>
+        <div class="mt">
+          <p><b>SAVE</b><span>Projects, the cursor on the one open</span></p>
+          <p><b>ALGORITHM</b><span>Projects or Sounds</span></p>
+          <p><b>K1 or SELECT</b><span>A project; the list moves past its ends</span></p>
+          <p><b>SAVE again</b><span>Into an empty slot, or over the one open</span></p>
+          <p><b>A new name</b><span>Made up as it is first saved: two words</span></p>
+          <p><b>K2, K3</b><span>Its name, a word each; kept as they rest</span></p>
+          <p><b>PLAY twice</b><span>Opens it; on an empty slot, a new project</span></p>
+          <p><b>A new project</b><span>No notes, no effects, the sounds at init</span></p>
+          <p><b>OCT&minus; twice</b><span>Deletes it</span></p>
+        </div>
+        <figure class="mfig"><img src="img/screens/32_save_sounds.png" alt="Save, Sounds" width="240" height="240"><figcaption>Sounds: the three tracks.</figcaption></figure>
+        <div class="mt">
+          <p><b>K1 or SELECT</b><span>A track</span></p>
+          <p><b>K2, Sound</b><span>A recording for it</span></p>
+          <p><b>K3, User</b><span>A sound you kept, whole; before the first, none</span></p>
+          <p><b>SAVE</b><span>Keeps it as a new one; one picked: twice, over it</span></p>
+          <p><b>OCT&minus; twice</b><span>One picked: deletes it; none: init, dry</span></p>
+          <p><b>EDIT + SAVE</b><span>The same, from any page</span></p>
+          <p><b>EDIT + OCT&minus;</b><span>Init, from any page</span></p>
+        </div>
+        <p class="note">A project is everything that plays: the sounds, the effects, the key and chords, the tempo and the rolls. Save while stopped. In the emulator, saves stay in this browser.</p>
+      </article>
+      <article id="sounds" data-group="Sound">
+        <h1>The sounds</h1>
+        <p class="msub">Sixty-four recordings, built in: nothing to load. Home shows a landscape for the kind of sound.</p>
+        <div class="mt">
+          <p><b>Sound</b><span>Which recording (K1), or PRESETS on Home</span></p>
+          <p><b>Start</b><span>Where it starts: past its attack, for a soft one</span></p>
+          <p><b>Loop</b><span>Full, once through, or Set: the region you choose</span></p>
+          <p><b>Tune</b><span>In semitones; ALGORITHM fine, in cents</span></p>
+          <p><b>Layer</b><span>EDIT again: a second recording under it</span></p>
+          <p><b>Voice</b><span>EDIT again: glide, velocity, track, grit</span></p>
+          <p><b>Loop row</b><span>EDIT again: where the loop starts and how long; turned, it sets the loop</span></p>
+          <p><b>Scenes</b><span>Thirteen: peaks and pines, a beach, a harbour, rooms at night</span></p>
+          <p><b>Names</b><span>A plant of each sound's landscape, in Latin</span></p>
+        </div>
+      </article>
+      <article id="filter" data-group="Sound">
+        <h1>Filter, envelope, LFO</h1>
+        <p class="msub">Every voice has a filter and an envelope; every synth an LFO. ALGORITHM picks the filter type.</p>
+        <div class="mt">
+          <p><b>Types</b><span>LP24, LP12, HP, BP, notch, peak, vowel, off</span></p>
+          <p><b>Filter knobs</b><span>Cutoff, resonance, envelope, drive</span></p>
+          <p><b>Drive</b><span>Into the filter: thicker, its resonance rounded</span></p>
+          <p><b>Vowel</b><span>The cutoff glides through u, o, a, e, i</span></p>
+          <p><b>Amp knobs</b><span>Attack, decay, sustain, release; ALGORITHM the level</span></p>
+        </div>
+        <div class="mt">
+          <p><b>Rate</b><span>0.05 to 20 Hz</span></p>
+          <p><b>Depth</b><span>Off, to nearly four octaves on the cutoff</span></p>
+          <p><b>Shape</b><span>Sine, triangle, ramp, square, random</span></p>
+          <p><b>Fade</b><span>From nothing to its depth, from a phrase's first note</span></p>
+          <p><b>Sync row</b><span>LFO again: free, or 4 bars to 1/16 on the tempo; restarted by a phrase's first note, or free</span></p>
+        </div>
+      </article>
+      <article id="effects" data-group="Sound">
+        <h1>Effects</h1>
+        <p class="msub">Four rows a synth on FX: its own reverb, delay and motion, and its sends. Then on GLO the colour, the Space and the media all three share. PRESETS the row, ALGORITHM its type.</p>
+        <figure class="mfig"><img src="img/screens/06_fx.png" alt="FX" width="240" height="240"><figcaption>Each row names its effect.</figcaption></figure>
+        <div class="mt">
+          <p><b>Reverb</b><span>The synth's own: room, plate, spring or hall; Amount, Tone, Size and the type's own knob</span></p>
+          <p><b>Delay</b><span>Delay or ping-pong on the tempo, a tape echo, or grains</span></p>
+          <p><b>Motion</b><span>Chorus, vibrato, drift, ensemble, phaser, flanger, tremolo (on the tempo)</span></p>
+          <p><b>Sends</b><span>Space, its send to the Space on GLO; its pan and width</span></p>
+        </div>
+        <p class="note">Each effect names its own four knobs: crush shows bits, tone, rate and jitter. A synth's delay is lofi, at 11 kHz; a long time at a slow tempo plays at half, still in time.</p>
+        <div class="mt">
+          <p><b>Off</b><span>The first of each: none of it, nothing returned</span></p>
+          <p><b>Room</b><span>Short and close; Diffuse from a few echoes to smooth</span></p>
+          <p><b>Plate</b><span>Bright and dense; Mod sets its slow sway</span></p>
+          <p><b>Spring</b><span>A tank's chirp, thin and wiry; Drip, how much</span></p>
+          <p><b>Hall</b><span>A small hall, wide and long, to 16 s; Mod sets its slow sway</span></p>
+          <p><b>Tape echo</b><span>A synth's: darkening repeats to 0.69 s, bent as Time turns, a slow wow</span></p>
+          <p><b>Grains</b><span>A synth's: a cloud of what it played; Size, Density, Texture</span></p>
+          <p><b>Colour</b><span>On GLO, the whole mix: saturate, crush, lossy (a codec's smear), noise, warm, distort</span></p>
+          <p><b>Media</b><span>The whole mix through tape, cassette, VHS, vinyl, radio or a dictaphone</span></p>
+        </div>
+        <p class="note">The Space, on GLO: one huge reverb all three send to (their Sends, or Home's Space row), its tail to minutes. Return, Tone, Size, Mod.</p>
+        <div class="mt">
+          <p><b>Hall</b><span>Long and wide, to 21 s</span></p>
+          <p><b>Space</b><span>Wider still, to two minutes</span></p>
+          <p><b>Haze</b><span>Deep, slow and dark</span></p>
+          <p><b>Bloom</b><span>Swells up behind a new sound</span></p>
+          <p><b>Lofi</b><span>Grainy: 11 kHz, 8 bits, a deep wow</span></p>
+          <p><b>Shimmer</b><span>An octave up rising through it; Shine, how much</span></p>
+          <p><b>Reverse</b><span>The sound backwards into it; Length, how long</span></p>
+          <p><b>Freeze</b><span>Holds what is in it, to five minutes; Hold, how much</span></p>
+        </div>
+      </article>
+      <article id="midi" data-group="Reference">
+        <h1>MIDI</h1>
+        <p class="msub">Over USB on the FM-1, in on its TRS jack too; in the emulator, the computer's MIDI ports.</p>
+        <div class="mt">
+          <p><b>GLO, the Setup row</b><span>MIDI in, MIDI out and Clock; its last knob the theme</span></p>
+          <p><b>In: Synth</b><span>Notes play the synth selected, as the keys do</span></p>
+          <p><b>In: Ch 1-3</b><span>Channel 1, 2, 3 plays synth 1, 2, 3; the others the synth selected</span></p>
+          <p><b>In: Ch 1 to Ch 16</b><span>Only that channel plays, on the synth selected; the other channels are ignored</span></p>
+          <p><b>Keys: All</b><span>On a synth at All, each note in plays its key's chord, at its velocity</span></p>
+          <p><b>Out: Notes</b><span>Every note each synth plays, on its channel 1 to 3</span></p>
+          <p><b>Out: Clock, All</b><span>The clock, 24 a beat, with start and stop; All adds the notes</span></p>
+          <p><b>Clock: Ext</b><span>An outside clock plays, steps and stops the sequences, its tempo taken</span></p>
+        </div>
+        <p class="note">Synths in harmony with another follow its MIDI notes too.</p>
+      </article>
+      <article id="credits" data-group="Reference">
+        <h1>Credits and licence</h1>
+        <p class="msub">GPL-3.0, as its platform. The recordings are the author&#39;s own.</p>
+        <div class="mt">
+          <p><b>Platform</b><span>The open FM&#8209;1 platform: Felucca, CS&#8209;1, Dinghy, SLOOP, FM&#8209;106</span></p>
+          <p><b>Installer</b><span>Felucca's update code, Leo Kuroshita</span></p>
+          <p><b>Type</b><span>Geist (SIL OFL 1.1); Kiloy as renders only</span></p>
+          <p><b>Marks</b><span>M&#8209;VAVE and FM&#8209;1 are their owners'; not made by M&#8209;VAVE</span></p>
+        </div>
+        <p class="note">Coming: undo (GLO and OCT&minus;), short loops, more effect types.</p>
+      </article>
+
+      <nav class="mpager" id="pager" aria-label="Previous and next"></nav>
+    </div>
+  </div>
+
+  <nav class="g foot links" aria-label="Sequencist, the author">
+    <span>By Sequencist</span>
+    <a href="https://github.com/InigoHernandez" target="_blank" rel="noopener">GitHub ↗</a>
+    <a href="https://sequencist.bandcamp.com/" target="_blank" rel="noopener">Bandcamp ↗</a>
+    <a href="https://www.youtube.com/@sequencist" target="_blank" rel="noopener">YouTube ↗</a>
+    <a href="https://www.instagram.com/sequencist.fm" target="_blank" rel="noopener">Instagram ↗</a>
+    <a href="https://soundcloud.com/sequencist" target="_blank" rel="noopener">SoundCloud ↗</a>
+  </nav>
+  <footer class="g foot fin">
+    <span>Demake</span><span class="w2">An ambient lofi machine</span>
+    <a class="w2" href="https://ko-fi.com/sequencist" target="_blank" rel="noopener">Support on Ko&#8209;fi ↗</a><span class="r">2026</span>
+    <span class="legal">GPL-3.0. M&#8209;VAVE and FM&#8209;1 are their owners' marks; Demake is not made or endorsed by M&#8209;VAVE.</span>
+  </footer>
+</main>
+<script src="app.js?v=44"></script>
+<script src="manual.js?v=9"></script>
+</body>
+</html>
