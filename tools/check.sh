@@ -18,7 +18,7 @@ echo "== warnings"
 for cc in clang $(ls /opt/homebrew/bin/gcc-[0-9]* /usr/local/bin/gcc-[0-9]* 2>/dev/null) ${GCC:-}; do
     case "$($cc --version 2>/dev/null | head -1)" in *clang*) [ "$cc" = clang ] || continue ;; esac
     for src in host/dmk_host.c; do
-        if ! out=$($cc -O2 $W $I -o "$B/$(basename "$src" .c)" "$src" 2>&1); then
+        if ! out=$($cc -O2 $W $I -o "$B/$(basename "$src" .c)" "$src" -lm 2>&1); then
             echo "  $cc $src: DOES NOT BUILD"; printf "%s\n" "$out" | grep "error:" | head -5; FAIL=1; continue
         fi
         n=$(printf "%s" "$out" | grep -c "warning:")
@@ -48,7 +48,7 @@ fi
 echo "== sanitizers"
 SAN="-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer"
 rm -f "$B/dmk_host_san"
-clang $SAN $W -w $I -o "$B/dmk_host_san" host/dmk_host.c || FAIL=1
+clang $SAN $W -w $I -o "$B/dmk_host_san" host/dmk_host.c -lm || FAIL=1
 rm -rf "$B/screens"; mkdir -p "$B/screens"
 {
     "$B/dmk_host_san" --selftest
