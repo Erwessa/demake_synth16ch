@@ -1784,6 +1784,33 @@ static void selftest(void)
             for (p = 0; p < SYN_PATS; p++) dirty += spat[s][p].used || spat[s][p].count;
         }
         if (dirty) { fails++; printf("selftest: cleared patterns returned after reboot (%d)\n", dirty); }
+        /* The reverse order must work too: OCT+ first, then SEQ. */
+        host_store_on(1, 1);
+        dmk_init(45); now_ms = 0; wait_ms(60); ui.boot_done = 1;
+        for (s = 0; s < DMK_SYNTHS; s++) {
+            sq[s].count = 0; seq_add(s, 0, 4, 66 + s, 100);
+            spat_keep(s);
+            spat[s][1].used = 1; spat[s][1].count = 1; spat[s][1].n[0] = sq[s].n[0];
+            scn[1].used = 1; scn[1].pat[s] = 1;
+        }
+        song_n = 1; song_mode = 1;
+        dmk_button(B_OCTU, 1); dmk_button(B_SEQ, 1);
+        dmk_button(B_SEQ, 0); dmk_button(B_OCTU, 0); wait_ms(30);
+        dirty = song_n || song_mode || scn_cur || !scn[0].used;
+        for (s = 0; s < DMK_SYNTHS; s++) {
+            dirty += sq[s].count != 0;
+            for (p = 0; p < SYN_PATS; p++) dirty += spat[s][p].used || spat[s][p].count;
+        }
+        if (dirty || !song_used(ui.song) || song_changed()) {
+            fails++; printf("selftest: OCT+ then SEQ did not clear and save all patterns (%d)\n", dirty);
+        }
+        dmk_init(46); now_ms = 0; wait_ms(60); ui.boot_done = 1;
+        dirty = song_n || song_mode || scn_cur || !scn[0].used;
+        for (s = 0; s < DMK_SYNTHS; s++) {
+            dirty += sq[s].count != 0;
+            for (p = 0; p < SYN_PATS; p++) dirty += spat[s][p].used || spat[s][p].count;
+        }
+        if (dirty) { fails++; printf("selftest: reverse-order clear returned after reboot (%d)\n", dirty); }
         host_store_on(0, 0);
         dmk_init(7); now_ms = 0; wait_ms(60); ui.boot_done = 1;
     }

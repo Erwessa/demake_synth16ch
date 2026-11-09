@@ -2838,9 +2838,10 @@ DMK_SMALL static void ui_button(int b, int down)
             ui.btn_used |= (uint16_t)(bit | 1u << B_HOME | 1u << B_SAVE);
             return;
         }
-        if (b == B_OCTU && (ui.btn_held >> B_SEQ & 1u)) { /* SEQ + OCT+: clear and persist all patterns, on any page */
+        if ((b == B_OCTU && (ui.btn_held >> B_SEQ & 1u)) ||
+            (b == B_SEQ && (ui.btn_held >> B_OCTU & 1u))) { /* either press order: SEQ + OCT+ clears and persists */
             int saved = 0;
-            ui.btn_used |= (uint16_t)(bit | 1u << B_SEQ);
+            ui.btn_used |= (uint16_t)(1u << B_OCTU | 1u << B_SEQ);
             seq_clear_all_patterns();
             ui.clear_arm = 0;
             ui.copy_arm = 0;

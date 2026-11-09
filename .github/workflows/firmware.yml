@@ -12,7 +12,7 @@ on:
     inputs:
       version:
         description: 'Version shown at boot and in the file name (X.Y or X.Y.Z)'
-        default: '0.4.26'
+        default: '0.4.27'
 
 permissions:
   contents: read
@@ -57,7 +57,7 @@ jobs:
           VER: ${{ github.event.inputs.version }}
         run: |
           export JIELI_TOOLCHAIN="$HOME/.jieli/toolchain" AC79_SDK="$HOME/.jieli/ac79-sdk"
-          [ -n "$VER" ] || VER=0.4.26
+          [ -n "$VER" ] || VER=0.4.27
           set -o pipefail
           if ! python3 tools/fm1/build.py --release "$VER" 2>&1 | tee build.log; then
             grep -nE "error|Error|ERROR|undefined|overflow|exceed|check|fail" build.log | head -60 > errs.txt || true
