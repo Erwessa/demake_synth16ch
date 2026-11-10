@@ -628,7 +628,8 @@ DMK_SMALL static void ui_init(void)
     ui.val[0][PG_HOME][0][4] = 72;                      /* tempo 72 */
     ui.val[0][PG_CHORD][0][0] = 2 * 128 / 5 + 12; ui.val[0][PG_CHORD][0][1] = 12; ui.val[0][PG_CHORD][0][2] = 0;
     for (s = 0; s < DMK_SYNTHS; s++) ui.val[s][PG_CHORD][0][3] = 64;   /* no strum (each synth's) */
-    ui.val[0][PG_CHORD][0][4] = 4;                     /* wide, auto, no spread; First snow */
+    ui.val[0][PG_CHORD][0][4] = PROG_EMPTY_V;          /* wide, auto, no spread; the progression: User 1, empty (a preset here
+                                                           played itself on PLAY in a blank project) */
     ui.val[0][PG_CHORD][1][0] = 9 * 128 / 12 + 5; ui.val[0][PG_CHORD][1][1] = 10;   /* A, Aeolian */
     ui.val[0][PG_CHORD][1][2] = 48; ui.val[0][PG_CHORD][1][3] = 12;           /* x1, hold */
     for (s = 0; s < DMK_SYNTHS; s++) ui.val[s][PG_CHORD][2][0] = choice_val(0, 2);   /* keys: chords on CHORD (each synth's) */

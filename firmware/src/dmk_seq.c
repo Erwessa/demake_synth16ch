@@ -77,6 +77,10 @@ typedef struct { uint8_t pat[DMK_SYNTHS], prog, mute, used; } scene_t;
 static scene_t scn[SCENES];
 static uint8_t scn_cur, scn_next = 0xFF, pat_mute;      /* the scene open, the one waiting for the bar, the mutes */
 static uint8_t spat_next[DMK_SYNTHS] = {0xFF, 0xFF, 0xFF};   /* a synth's pattern waiting for the bar */
+#define PROG_EMPTY_V 105u                               /* User 1 of the 20 progressions (16 * 128 / 20 + 64 / 20), as a knob value */
+static int uprog_free_v(void);                          /* dmk_chord.c: the first user progression with no chords, a knob value */
+static void pat_prog_put(uint8_t v);
+static void sp_sync(void);
 static uint8_t pat_prog_get(void);                      /* the CHORD page's progression (dmk_ui.c) */
 static void pat_prog_put(uint8_t v);
 static void seq_quiet(int s);
@@ -160,7 +164,7 @@ static void pat_init(void)                              /* the first song: scene
 {
     int s, p;
     for (s = 0; s < DMK_SYNTHS; s++) for (p = 0; p < SYN_PATS; p++) spat[s][p].used = 0;
-    for (p = 0; p < SCENES; p++) { scn[p].used = 0; scn[p].mute = 0; for (s = 0; s < DMK_SYNTHS; s++) scn[p].pat[s] = 0; }
+    for (p = 0; p < SCENES; p++) { scn[p].used = 0; scn[p].mute = 0; scn[p].prog = PROG_EMPTY_V; for (s = 0; s < DMK_SYNTHS; s++) scn[p].pat[s] = 0; }
     scn[0].used = 1;
     scn_cur = 0; scn_next = 0xFF; pat_mute = 0;
     for (s = 0; s < DMK_SYNTHS; s++) spat_next[s] = 0xFF;
@@ -670,4 +674,15 @@ static void seq_clear_all_patterns(void)
     pat_init();
     song_init();
     seq_rec = 0;
+    {   /* the chord machine's progression too: a preset (First snow ...) would go on playing chords under PLAY. An
+         * empty user progression takes its place; the user's own written ones are not touched */
+        int v = uprog_free_v();
+        if (v >= 0) {
+            int p;
+            pat_prog_put((uint8_t)v);
+            for (p = 0; p < SCENES; p++) scn[p].prog = (uint8_t)v;
+            sp_sync();
+        }
+    }
+    chord_rest();
 }

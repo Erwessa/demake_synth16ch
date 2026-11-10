@@ -434,6 +434,29 @@ static void selftest(void)
     dmk_render(b, 512);
     e = 0; for (int i = 0; i < 1024; i++) e += b[i] < 0 ? -b[i] : b[i];
     if (e) { fails++; printf("selftest: sound before any key\n"); }
+    {   /* a blank project under PLAY is silent (no preset progression plays chords by itself); a preset does play, and
+         * SEQ + OCT+ takes it away again, keeping the user's own written progressions */
+        int bad = 0, blocks;
+        if (choice_val(16, PROG_N) != PROG_EMPTY_V) { fails++; printf("selftest: the blank progression is not User 1\n"); }
+        tap(B_PLAY);
+        for (int k = 0; k < 400; k++) { dmk_render(b, 512); now_ms += 11; e = 0; for (int i = 0; i < 1024; i++) e += b[i] < 0 ? -b[i] : b[i]; bad += e != 0; }
+        if (bad) { fails++; printf("selftest: a blank project plays by itself under PLAY (%d blocks)\n", bad); }
+        tap(B_PLAY);
+        ui.val[0][PG_CHORD][0][4] = choice_val(0, PROG_N); sp_sync();           /* First snow */
+        tap(B_PLAY); blocks = 0;
+        for (int k = 0; k < 400; k++) { dmk_render(b, 512); now_ms += 11; e = 0; for (int i = 0; i < 1024; i++) e += b[i] < 0 ? -b[i] : b[i]; blocks += e != 0; }
+        if (!blocks) { fails++; printf("selftest: the preset progression does not play (the test is blind)\n"); }
+        uprog[0].n = 1; uprog[0].s[0] = PROG[0].s[0];                          /* the user's own, in User 1 */
+        dmk_button(B_SEQ, 1); dmk_button(B_OCTU, 1); dmk_button(B_OCTU, 0); dmk_button(B_SEQ, 0); wait_ms(60);
+        if (ch.prog != 17 || uprog[0].n != 1) { fails++; printf("selftest: SEQ + OCT+ left progression %d (User 1 has %d chords)\n", ch.prog, uprog[0].n); }
+        for (int k = 0; k < 3000; k++) { dmk_render(b, 512); now_ms += 11; }       /* the tails of what rang before die away */
+        tap(B_PLAY); bad = 0;
+        for (int k = 0; k < 400; k++) { dmk_render(b, 512); now_ms += 11; e = 0; for (int i = 0; i < 1024; i++) e += b[i] < 0 ? -b[i] : b[i]; bad += e != 0; }
+        if (bad) { fails++; printf("selftest: after SEQ + OCT+ the chord machine still plays (%d blocks)\n", bad); }
+        tap(B_PLAY);
+        uprog[0].n = 0;
+        dmk_init(7); now_ms = 0;
+    }
     dmk_key(0, 1);
     for (int k = 0; k < 20; k++) dmk_render(b, 512);
     e = 0; for (int i = 0; i < 1024; i++) e += b[i] < 0 ? -b[i] : b[i];
@@ -495,6 +518,7 @@ static void selftest(void)
             seq_del(1, seq_find(1, 3, snap(53 + 24)));
         }
         tap(B_REC);
+        ui.val[0][PG_CHORD][0][4] = choice_val(0, PROG_N); sp_sync();      /* the preset First snow (a blank project has none) */
         tap(B_PLAY);
         for (int k = 0; k < 10; k++) dmk_render(b, 512);
         { int on = 0; for (int v = 0; v < DMK_VOICES; v++) on += vc[v].on; if (!dmk_playing() || !on) { fails++; printf("selftest: PLAY sounds nothing\n"); } }
@@ -1863,7 +1887,8 @@ static void selftest(void)
         for (k = 0; k < 120; k++) { dmk_render(b, 256); for (v = 0; v < DMK_VOICES; v++) on += vc[v].on && vc[v].sy == 0 && vc[v].src == SRC_CHORD; }
         tap(B_PLAY);
         if (on) { fails++; printf("selftest: the chords a synth plays at no chance still sound\n"); }
-        ui.val[0][PG_ROLL][1][2] = 127; ui.val[0][PG_ROLL][1][0] = 127; sp_sync();
+        ui.val[0][PG_ROLL][1][2] = 127; ui.val[0][PG_ROLL][1][0] = 127;
+        ui.val[0][PG_CHORD][0][4] = choice_val(0, PROG_N); sp_sync();
         tap(B_PLAY);
         for (k = 0; k < 600; k++) {                     /* ~3.5 s: a few chords */
             dmk_render(b, 256);

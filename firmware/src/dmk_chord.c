@@ -141,6 +141,13 @@ static int harm_note(int f, int n)
     int h = note_of(degree_of(snap(n)) + ch.hint[f]);
     return snap_set(h, pc_bent(), ch_cmask);
 }
+/* the progression a blank project has: a user one with no chords (silence under PLAY), as a knob value */
+static int uprog_free_v(void)                           /* the first user progression with no chords, as a knob value (-1: none) */
+{
+    int i;
+    for (i = 0; i < 4; i++) if (!uprog[i].n) return (16 + i) * 128 / PROG_N + 64 / PROG_N;
+    return -1;
+}
 static const prog_t *cur_prog(void) { return ch.prog < 16 ? &PROG[ch.prog] : &uprog[ch.prog - 16]; }
 
 /* a synth's note as it plays, by its FOLLOW */
